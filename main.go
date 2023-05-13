@@ -1,17 +1,37 @@
 package main
 
 import (
+	"bufio"
+	"errors"
 	"fmt"
 	"github.com/golang-module/carbon/v2"
-	"gostudy/libs"
+	"github.com/xuri/excelize/v2"
+	"go_study/libs"
+	"gopkg.in/yaml.v3"
+	"io/fs"
 	"math/big"
 	"net"
+	"os"
+	"path/filepath"
 	"reflect"
 	"strconv"
 	"time"
 )
 
 func main() {
+	readFile()
+	writeFile()
+	readFileLine()
+	writeFileLine()
+	readYaml()
+	writeYaml()
+	readXlsx()
+	writeXlsx()
+	pathOperation()
+	studyDatetime()
+	studyConcat()
+	studyIpNetwork()
+	studyStr2num()
 	user := &study.User{Name: "赵钱孙李", Age: 32}
 	fmt.Println(user.MyAge())
 	var a study.Action = user
@@ -19,6 +39,125 @@ func main() {
 	fmt.Println(user.MyAge())
 }
 
+func readFile() {
+	file, err := os.ReadFile(`D:\OneDrive\python\tool.py`)
+	if err != nil {
+		return
+	}
+
+	fmt.Println(string(file))
+}
+
+func readFileLine() {
+	file, err := os.Open(`D:\OneDrive\python\tool.py`)
+	if err != nil {
+		return
+	}
+	defer file.Close()
+
+	reader := bufio.NewScanner(file)
+	for reader.Scan() {
+		fmt.Println(reader.Text())
+	}
+
+}
+func writeFile() {
+	file, err := os.Create("data.txt")
+	if err != nil {
+		return
+	}
+	defer file.Close()
+
+	_, _ = file.Write([]byte("大口大口的"))
+}
+func writeFileLine() {
+	file, err := os.Create("data.txt")
+	if err != nil {
+		return
+	}
+	defer file.Close()
+
+	for i := 1; i <= 10; i++ {
+		_, _ = file.Write([]byte("大口大口的\n"))
+	}
+}
+
+func readYaml() {
+	file, err := os.ReadFile(`C:\Users\sharp\AppData\Local\Programs\clash_win\config.yaml`)
+	if err != nil {
+		return
+	}
+	var data map[string]any
+	err = yaml.Unmarshal(file, &data)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(data["dns"].(map[string]any)["nameserver"])
+}
+
+func writeYaml() {
+	file, err := os.Create("data.txt")
+	if err != nil {
+		return
+	}
+	defer file.Close()
+
+	fileIn, _ := os.ReadFile(`C:\Users\sharp\AppData\Local\Programs\clash_win\config.yaml`)
+	var data map[string]any
+	if err = yaml.Unmarshal(fileIn, &data); err != nil {
+		fmt.Println(err)
+	}
+
+	out, _ := yaml.Marshal(data)
+	if _, err = file.Write(out); err != nil {
+		fmt.Println(err)
+	}
+}
+
+func readXlsx() {
+	f, err := excelize.OpenFile(`C:\Users\sharp\Desktop\data\2023-04-21-plan2-all-f11.xlsx`)
+	if err != nil {
+		return
+	}
+	defer func(f *excelize.File) {
+		err := f.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(f)
+
+	sheet, _ := f.GetRows("全国")
+	for _, row := range sheet {
+		fmt.Println(row)
+	}
+}
+
+func writeXlsx() {
+	file := excelize.NewFile()
+	defer file.Close()
+	_, _ = file.NewSheet("sheet1")
+
+	err := file.SetCellValue("sheet1", "A1", 509)
+	if err != nil {
+		return
+	}
+	if err = file.SaveAs("Book1.xlsx"); err != nil {
+		fmt.Println(err)
+	}
+}
+
+func pathOperation() {
+	_ = filepath.WalkDir(".", func(path string, d fs.DirEntry, err error) error {
+		fmt.Println(path, d.IsDir())
+		return nil
+	})
+
+	files, _ := filepath.Glob("*.go")
+	fmt.Println(files)
+	if _, err := os.Stat("/path/to/whatever"); errors.Is(err, os.ErrNotExist) {
+		fmt.Println(false)
+	}
+}
 func studyConcat() {
 	a := "sss"
 	b := "ddd"
