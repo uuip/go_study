@@ -61,6 +61,7 @@ func readFileLine() {
 	}
 
 }
+
 func writeFile() {
 	file, err := os.Create("data.txt")
 	if err != nil {
@@ -70,6 +71,7 @@ func writeFile() {
 
 	_, _ = file.Write([]byte("大口大口的"))
 }
+
 func writeFileLine() {
 	file, err := os.Create("data.txt")
 	if err != nil {
@@ -158,6 +160,7 @@ func pathOperation() {
 		fmt.Println(false)
 	}
 }
+
 func studyConcat() {
 	a := "sss"
 	b := "ddd"
